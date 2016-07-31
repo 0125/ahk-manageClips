@@ -4,8 +4,8 @@
 Gosub loadSettings
 OnExit, exitRoutine
 
-InputBox, sourcePath, Source path, , , , 110, , , , , % sourcePath
-If (sourcePath = "")
+InputBox, sourcePath, Source path, Set vlc as the default video player for the clip file types and have vlc loop file, , , , , , , , % sourcePath
+If (sourcePath = "") or (ErrorLevel) ; ErrorLevel = InputBox canceled
 	exitapp
 	
 reviewClips(sourcePath)
@@ -78,6 +78,11 @@ guiReview(input) {
 			return
 			
 		FileMove, % input, % dir "\" output "." ext
+		If (ErrorLevel)
+		{
+			msgbox Clip with this name already exists!
+			Gosub guiReview_rename
+		}
 	return
 	
 	guiReview_destroy:
@@ -92,25 +97,40 @@ guiReview(input) {
 
 
 vlcStopPlayback:
-	ControlSend, , s, ahk_class QWidget
+	; ControlSend, , s, ahk_class QWidget
+	
+	Gosub activateVlc
+	Send, s
 return
 
 vlcForward10:
-	ControlSend, , !{right}, ahk_class QWidget
+	; ControlSend, , !{right}, ahk_class QWidget
+	Gosub activateVlc
+	Send, !{right}
 return
 
 vlcBackward10:
-	ControlSend, , !{left}, ahk_class QWidget
+	; ControlSend, , !{left}, ahk_class QWidget
+	Gosub activateVlc
+	Send, !{right}
 return
 
 vlcForward5:
-	ControlSend, , +{right}, ahk_class QWidget
+	; ControlSend, , +{right}, ahk_class QWidget
+	Gosub activateVlc
+	Send, !{right}
 return
 
 backward5:
-	ControlSend, , +{left}, ahk_class QWidget
+	; ControlSend, , +{left}, ahk_class QWidget
+	Gosub activateVlc
+	Send, !{right}
 return
 
+activateVlc:
+	IfWinNotActive, ahk_class QWidget
+		WinActivate, ahk_class QWidget
+return
 
 loadSettings:
 	SplitPath, A_ScriptName, , , , ScriptName
