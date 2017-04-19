@@ -194,7 +194,7 @@ guiReview(input) {
 		reviewFiles.push(A_LoopFileFullPath)
 	
 	; properties
-	gui review: +Hwnd_guiReview +LabelguiReview_ -MinimizeBox
+	gui review: +Hwnd_guiReview +LabelguiReview_ -MinimizeBox +AlwaysOnTop
 	
 	; controls
 	gui review: add, button, x10 w100 r2 gguiReview_scheduleFileDelete, Delete
