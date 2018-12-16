@@ -221,7 +221,7 @@ guiReview(input) {
 		{
 			Gosub vlcStopPlayback ; stop playback since this is the last file and can't be stopped by playing the next file
 			Gosub guiReview_fileDelete
-			WinKill, ahk_class QWidget
+			WinKill, ahk_exe vlc.exe
 			gui review: destroy
 			return
 		}
@@ -238,7 +238,7 @@ guiReview(input) {
 		
 		If !(ext = "jpg") and !(ext = "jpeg") and !(ext = "png") and !(ext = "gif") and !(ext = "bmp") 
 		{ ; assume video file
-			WinWait, ahk_class QWidget
+			WinWait, ahk_exe vlc.exe
 			loop, 4
 				Gosub vlcForward10
 			Gosub vlcForward5
@@ -284,39 +284,39 @@ guiReview(input) {
 
 
 vlcStopPlayback:
-	; ControlSend, , s, ahk_class QWidget
+	; ControlSend, , s, ahk_exe vlc.exe
 	
 	Gosub activateVlc
 	Send, s
 return
 
 vlcForward10:
-	; ControlSend, , !{right}, ahk_class QWidget
+	; ControlSend, , !{right}, ahk_exe vlc.exe
 	Gosub activateVlc
 	Send, !{right}
 return
 
 vlcBackward10:
-	; ControlSend, , !{left}, ahk_class QWidget
+	; ControlSend, , !{left}, ahk_exe vlc.exe
 	Gosub activateVlc
 	Send, !{right}
 return
 
 vlcForward5:
-	; ControlSend, , +{right}, ahk_class QWidget
+	; ControlSend, , +{right}, ahk_exe vlc.exe
 	Gosub activateVlc
 	Send, !{right}
 return
 
 backward5:
-	; ControlSend, , +{left}, ahk_class QWidget
+	; ControlSend, , +{left}, ahk_exe vlc.exe
 	Gosub activateVlc
 	Send, !{right}
 return
 
 activateVlc:
-	IfWinNotActive, ahk_class QWidget
-		WinActivate, ahk_class QWidget
+	IfWinNotActive, ahk_exe vlc.exe
+		WinActivate, ahk_exe vlc.exe
 return
 
 loadSettings:
