@@ -1,4 +1,18 @@
-﻿#Persistent
+﻿g_scriptReqs=
+(
+Script requirements:
+- Have vlc installed
+
+VLC settings:
+- Loop single file
+- Allow only one instance
+- Do not resize interface to video size
+)
+global g_scriptReqs
+
+global sourcePath
+
+#Persistent
 #SingleInstance, force
 SetBatchLines -1
 hotkey, ~^s, reloadScript
@@ -6,15 +20,19 @@ hotkey, ~^s, reloadScript
 Gosub loadSettings
 OnExit, exitRoutine
 
-InputBox, sourcePath, Source path, * Have vlc installed `n* Loop file `n* Single instance mode, , , , , , , , % sourcePath
-If (sourcePath = "") or (ErrorLevel) ; ErrorLevel = InputBox canceled
-	exitapp
-
 hotkey, ~^s, off
 
-guiReview(sourcePath)
+loop, 
+	guiReview(promptSourcePath())
 exitapp
 return
+
+promptSourcePath() {
+	InputBox, output, Choose clip source folder, % g_scriptReqs, , , , , , , , % sourcePath
+	If (output = "") or (ErrorLevel) ; ErrorLevel = InputBox canceled
+		exitapp
+	return output
+}
 
 guiRename(input) {
 	static
@@ -192,7 +210,7 @@ guiReview(input) {
 	reviewFiles := []
 	loop, % input "\*.*", 0, 0
 		reviewFiles.push(A_LoopFileFullPath)
-	
+
 	; properties
 	gui review: +Hwnd_guiReview +LabelguiReview_ -MinimizeBox +AlwaysOnTop
 	
@@ -332,12 +350,17 @@ loadSettings:
 	
 	iniWrapper_loadAllSections(ini)
 	
+	; get vlc path
 	If (vlcPath = "")
 		RegRead, vlcPath, HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\VideoLAN\VLC
 	If (vlcPath = "")
 	{
-		msgbox Could not find vlc installation
-		exitapp
+		FileSelectFile, vlcPath , 3, , Select vlc executable, Executables (*.exe) ; File Must Exist / Path Must Exist
+		If vlcPath not contains vlc.exe
+		{
+			msgbox Selected executable is not vlc`n`nClosing script
+			exitapp
+		}
 	}
 	else
 		global vlcPath
@@ -352,6 +375,7 @@ return
 writeIni:
 	ini_insertSection(ini, "General")
 		ini_insertKey(ini, "General", "sourcePath=" . "")
+		ini_insertKey(ini, "General", "vlcPath=" . "")
 		
 	ini_insertSection(ini, "Settings")
 		ini_insertKey(ini, "Settings", "guiReviewX=" . "")

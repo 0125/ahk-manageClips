@@ -1,0 +1,54 @@
+Purpose
+    Rename, delete and move recorded .mp4 clips using vlc
+
+Flow
+    Select video clip source folder
+    Select video clip destination folder
+    Play the clips inside the folder, giving the user a few choices as to what to do with the clip
+    Repeat
+
+Elements
+    Use global object to store settings and object to json lib to load & write object to file
+    
+    Settings
+        Store source & destination root folder for usage in guiFolderSelect
+
+    guiFolderSelect()
+        Flow
+            For selecting recording source & destination folders
+
+        Options
+            Edit field with FileSelectFolder option for specifying the root folder, populate both with previous input if available
+            Treeview
+                Use the root folder to populate treeview with all subfolders
+                The selected subfolder is the output of the function
+    
+    guiReviewRecordings()
+        Flow
+            Go through every clip in specified source folder. Play them one by one, skipping to a certain part of the video if specified.
+            Continue to the next clip after the user has chosen an option to perform on the current clip
+            After all clips in a folder have been handled, delete the folder (only if it is empty),
+            then prompt user to select another source folder
+        
+        Options
+            Focussed edit field with file current file name
+
+            Edit field to skip to x seconds remaining, can only be rounded by 10. Eg: 10, 20, 50, 150
+            Keep (enter hotkey)
+            Delete (delete to recycle bin)
+            Undo
+                Restore last deleted file file from recycle bin and make that the selected file,
+                or if that is not possible create a buffer with deleted clips temporarily renaming them,
+                before deleting. For example delete the 3rd oldest clip when a new one is renamed
+            Play
+
+        Show info
+            Currently selected file
+            File source folder path
+            File destination folder path
+
+            Amount of recordings remaining in source folder path
+            Amount of recordings remaining in source root folder path
+            Amount of deleted clips in source folder
+            Amount of time elapsed since source folder was started
+            Clips per hour based on available data
