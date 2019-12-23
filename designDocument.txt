@@ -37,10 +37,10 @@ Elements
             Keep (enter hotkey)
             Delete (delete to recycle bin)
             Undo
-                Restore last deleted file file from recycle bin and make that the selected file,
-                or if that is not possible create a buffer with deleted clips temporarily renaming them,
-                before deleting. For example delete the 3rd oldest clip when a new one is renamed
-            Play
+                Stop playing current file and revert to last deleted or renamed file.
+                Instead of immediately deleting files 'schedule' them for deletion by adding a prefix after the file name
+                and bulk move them to the recycle bin when the script closes or the folder has been completed
+            Play - open and plays the currently selected file
 
         Show info
             Currently selected file

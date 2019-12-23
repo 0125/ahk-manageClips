@@ -1,0 +1,12 @@
+{
+  "destinationFolder": "D:\\Downloads\\workfolderVlcManager\\Sorted\\BF4",
+  "destinationRoot": "D:\\Downloads\\workfolderVlcManager\\Sorted",
+  "forwardSeconds": "50",
+  "guifolderSelectX": 1145,
+  "guifolderSelectY": 311,
+  "guiReviewX": 1312,
+  "guiReviewY": 286,
+  "sourceFolder": "D:\\Downloads\\workfolderVlcManager\\Battlefield 4",
+  "sourceRoot": "D:\\Downloads\\workfolderVlcManager",
+  "vlcExe": "D:\\Apps\\VLC\\vlc.exe"
+}
