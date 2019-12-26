@@ -1,5 +1,9 @@
 ExitFunc(ExitReason, ExitCode) {
+    g__guiReview.SavePos()
+    g__guiStats.SavePos()
+    
     saveSettings()
+    class_vlc._Kill()
 }
 
 loadSettings() {
@@ -32,13 +36,28 @@ setVlcPath() {
     settings.vlcExePath := SelectedFile
 }
 
-startReviewing() {
-    If !(g_debug)
-        guiSetRootDirs()
-
-    startReview := new class_review
-
-    If (g_debug) {
-        msgbox end of script
+FormatTimeSeconds(input) {
+    If input is not Integer
+    {
+        msgbox, 64, , % A_ThisFunc ": Incorrect input format. Input is not integer`n`nClosing.."
+        exitapp
     }
+    
+    ; format amount of seconds for displaying
+    displayTime := g_nullTimeStamp
+    EnvAdd, displayTime, input, Seconds
+    FormatTime, OutputVar , % displayTime, HH:mm:ss
+    return OutputVar
+}
+
+startReviewing() {
+    If (g_debug) {
+        ; myStats := new class_Stats(50)
+        startReview := new class_review
+        ; msgbox end of script
+        return
+    }
+
+    guiSetRootDirs()
+    startReview := new class_review
 }

@@ -6,6 +6,10 @@ Outline
     Go through every recording in the source folder showing giving actions to perform on each file
 
 Elements
+    guiSetRootDirs
+        Purpose
+            Set source and destination root folders. Close program if not specified
+    
     class_vlc
         Purpose
             Handle everything to do with vlc eg:
@@ -48,7 +52,3 @@ Elements
                 - Length
                 - Amount of recordings handled (saved/ deleted)
                 - Recordings per hour at current pace
-
-    guiSetRootDirs
-        Purpose
-            Set source and destination root folders. Close program if not specified

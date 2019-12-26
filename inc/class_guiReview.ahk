@@ -16,6 +16,7 @@ class class_guiReview {
 		this.Events["_guiReview_BtnUndo"] := this._guiReview_BtnUndo.Bind(this)
 		this.Events["_guiReview_BtnForward"] := this._guiReview_BtnForward.Bind(this)
 		this.Events["_guiReview_BtnSaveAs"] := this._guiReview_BtnSaveAs.Bind(this)
+		this.Events["_guiReview_BtnStats"] := this._guiReview_BtnStats.Bind(this)
 		margin := 5
 		leftMargin := 10
 		editWidth := 450
@@ -25,9 +26,10 @@ class class_guiReview {
         Gui % this.hwnd ":Add", edit, % " w" editWidth
         Gui % this.hwnd ":Add", button, % "w" editWidth - btnWidth - margin " r2 gguiReview_BtnDelete", Delete
         Gui % this.hwnd ":Add", button, x+5 w50 r2 gguiReview_BtnPlay, Play
-        Gui % this.hwnd ":Add", button, % "x" leftMargin " w" editWidth - (btnWidth * 2) - (margin * 2) " r1 gguiReview_BtnUndo", Undo
+        Gui % this.hwnd ":Add", button, % "x" leftMargin " w" editWidth - (btnWidth * 3) - (margin * 3) " r1 gguiReview_BtnUndo", Undo
         Gui % this.hwnd ":Add", button, x+5 w50 r1 gguiReview_BtnForward, Forward
         Gui % this.hwnd ":Add", button, x+5 w50 r1 gguiReview_BtnSaveAs, Save as
+        Gui % this.hwnd ":Add", button, x+5 w50 r1 gguiReview_BtnStats, Stats
 
 		; hotkeys
 		hotkey, IfWinActive, % "ahk_id " this.hwnd
@@ -35,7 +37,10 @@ class class_guiReview {
         hotkey, IfWinActive
 
 		; show
-		Gui % this.hwnd ":Show"
+		If (settings.guiReviewX) and (settings.guiReviewY)
+			Gui % this.hwnd ":Show", % "x" settings.guiReviewX " y" settings.guiReviewY
+		else
+			Gui % this.hwnd ":Show"
 	}
 	
 	Update(input) {
@@ -110,6 +115,20 @@ class class_guiReview {
 		this._setEditFocus()
 	}
 
+	_guiReview_BtnStats() {
+		this.parentInstance.ShowStatsGui()
+
+		this._setEditFocus()
+	}
+
+	SavePos() {
+		If !(WinExist("ahk_id " this.hwnd))
+            return
+		WinGetPos, outX, outY, , , % "ahk_id " this.hwnd
+		settings.guiReviewX := outX
+        settings.guiReviewY := outY
+	}
+
 	Close() {
 		msgbox, 68, % A_ScriptName, Are you sure you want to exit the program?
 		IfMsgBox, No
@@ -156,6 +175,12 @@ guiReview_BtnSaveAs:
 		if (a = A_Gui+0)
 			b["Events"]["_guiReview_BtnSaveAs"].Call()
 return
+
+guiReview_BtnStats() {
+	for a, b in class_guiReview.Instances 
+		if (a = A_Gui+0)
+			b["Events"]["_guiReview_BtnStats"].Call()
+}
 
 guiReview_HotkeyEnter:
 	for a, b in class_guiReview.Instances 

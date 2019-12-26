@@ -20,6 +20,8 @@ class class_review {
         ; setup classes
         this.vlc := new class_vlc(this)
         this.guiReview := new class_guiReview(this)
+        g__guiReview := this.guiReview ; holds class instance for saving position
+        this.Stats := new class_stats(this.files.length())
 
         ; start reviewing the first file
         this._PlayNextFile()
@@ -27,6 +29,10 @@ class class_review {
 
     SetGuiReviewOwner() {
         this.guiReview.SetGuiOwner(this.vlc.hwnd)
+    }
+
+    ShowStatsGui() {
+        this.Stats.ShowGui()
     }
 
     Play() {
@@ -57,6 +63,7 @@ class class_review {
         FileCreateDir, % settings.destinationRoot "\" destinationFolder ; create destination folder if it doesnt already exist
 
         this.fileChanges.push({oldPath: this.file, newPath: newPath})
+        this.Stats.AddAction() ; register positive action
         FileMove, % this.file, % newPath
 
         this._PlayNextFile()
@@ -69,6 +76,7 @@ class class_review {
 
         newPath := OutDir "\" OutNameNoExt ".deleted"
         this.fileChanges.push({oldPath: this.file, newPath: newPath})
+        this.Stats.AddAction() ; register positive action
         FileMove, % this.file, % newPath
 
         this._PlayNextFile()
@@ -81,6 +89,8 @@ class class_review {
         }
         input := this.fileChanges.pop()
         FileMove, % input.newPath, % input.oldPath
+
+        this.Stats.RemoveAction() ; register negative action
 
         this._PlayNextFile()
     }

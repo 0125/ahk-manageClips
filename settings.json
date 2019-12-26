@@ -1,6 +1,10 @@
 {
   "destinationRoot": "D:\\Downloads\\workFolderGameClips\\Sorted",
   "ForwardSeconds": 10,
+  "guiReviewX": 1172,
+  "guiReviewY": 528,
+  "guiStatsX": 1388,
+  "guiStatsY": 241,
   "sourceRoot": "D:\\Downloads\\workFolderGameClips\\Unsorted",
   "vlcExePath": "D:\\Apps\\VLC\\vlc.exe"
 }
