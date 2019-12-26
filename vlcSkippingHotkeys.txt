@@ -1,6 +1,0 @@
-
-Hotkey                      Combination         Skips
-Very short forward jump     shift + right       3 seconds
-Short forward jump          alt + right         10 seconds
-Medium forward jump         ctrl + right        60 seconds
-Long forward jump           ctrl + alt + right  300 seconds
