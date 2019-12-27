@@ -1,6 +1,8 @@
 ExitFunc(ExitReason, ExitCode) {
     g__guiReview.SavePos()
+    g__review.RecycleFiles()
     g__guiStats.SavePos()
+    g__Stats.SaveStats()
     
     saveSettings()
     class_vlc._Kill()
@@ -17,6 +19,9 @@ loadSettings() {
 
     If !(settings.vlcExePath)
         setVlcPath()
+
+    If !(settings.totalSecondsElapsed) ; += expression doesnt work with empty variables so set to 0 if not available
+        settings.totalSecondsElapsed := 0
 }
 
 saveSettings() {
@@ -57,6 +62,7 @@ startReviewing() {
         ; msgbox end of script
         return
     }
+
 
     guiSetRootDirs()
     startReview := new class_review

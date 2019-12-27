@@ -3,18 +3,18 @@ class class_Stats {
         this.startTime := A_Now ; keep track of elapsed time
         this.remainingFiles := input ; keep track of processed files
         this.handledFiles := 0 ; keep track of processed files
-
-        this.AddAction()
     }
 
     AddAction() {
         this.handledFiles++
+        settings.totalHandledFiles++
         this.remainingFiles--
         this.UpdateStats()
     }
 
     RemoveAction() {
         this.handledFiles--
+        settings.totalHandledFiles--
         this.remainingFiles++
         this.UpdateStats()
     }
@@ -23,11 +23,17 @@ class class_Stats {
         this._setTimePassed()
         this._setHourlyHandledFiles()
 
-        info := []
-        info.remainingFiles := this.remainingFiles
-        info.HourlyHandledFiles := this.HourlyHandledFiles
-        info.PassedTime := FormatTimeSeconds(this.elapsedSeconds)
-        this.guiStats.Update(info)
+        this.info := []
+        this.info.remainingFiles := this.remainingFiles
+        this.info.HandledFiles := this.HandledFiles
+        this.info.HourlyHandledFiles := this.HourlyHandledFiles
+        this.info.PassedTime := FormatTimeSeconds(this.elapsedSeconds)
+
+        this.info.totalHandledFiles := settings.totalHandledFiles
+        this.info.totalSecondsElapsed := FormatTimeSeconds(settings.totalSecondsElapsed + this.elapsedSeconds)
+        this.info.totalHourlyHandledFiles := settings.totalHandledFiles / (settings.totalSecondsElapsed + this.elapsedSeconds)
+
+        this.guiStats.Update(this.info)
     }
 
     ShowGui() {
@@ -38,6 +44,14 @@ class class_Stats {
         else
             this.guiStats.Show()
         this.UpdateStats()
+    }
+
+    SaveStats() {
+        If !(IsObject(this.info)) ; check if there stats to save
+            return
+
+        this.UpdateStats()
+        settings.totalSecondsElapsed += this.elapsedSeconds
     }
 
     _setTimePassed() {

@@ -17,11 +17,17 @@ class class_review {
             return
         }
 
+        this.RecycleFiles() ; move any deleted files that might not have been deleted if script didnt close properly to recycle bin
+
         ; setup classes
         this.vlc := new class_vlc(this)
         this.guiReview := new class_guiReview(this)
-        g__guiReview := this.guiReview ; holds class instance for saving position
         this.Stats := new class_stats(this.files.length())
+        g__review := this ; holds class instance for saving moving scheduled deleted files to recycle bin on script close
+        g__guiReview := this.guiReview ; holds class instance for saving position
+        g__stats := this.Stats ; holds class instance for saving moving scheduled deleted files to recycle bin on script close
+
+        this.ShowStatsGui()
 
         ; start reviewing the first file
         this._PlayNextFile()
@@ -93,6 +99,15 @@ class class_review {
         this.Stats.RemoveAction() ; register negative action
 
         this._PlayNextFile()
+    }
+
+    RecycleFiles() {
+        loop, files, % settings.sourceRoot "\*.*", FR
+        {
+            SplitPath, % A_LoopFileFullPath, OutFileName, OutDir, OutExtension, OutNameNoExt, OutDrive
+            If InStr(OutExtension, "deleted")
+                FileRecycle, % A_LoopFileFullPath
+        }
     }
 
     _PlayNextFile() {

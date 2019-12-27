@@ -11,6 +11,17 @@ class class_guiStats {
         LV_Add(,"Passed time", input.PassedTime)
         LV_Add(,"Remaining", input.remainingFiles)
         LV_Add(,"Hourly", input.HourlyHandledFiles)
+        LV_Add(,"Handled session", input.HandledFiles)
+
+        LV_Add(,"Total handled", input.totalHandledFiles)
+        LV_Add(,"Total passed time", input.totalSecondsElapsed)
+        LV_Add(,"Total hourly", Round(input.totalHourlyHandledFiles, 2))
+
+        this.info.totalHandledFiles := FormatTimeSeconds(settings.totalHandledFiles)
+        this.info.totalSecondsElapsed := FormatTimeSeconds(settings.totalSecondsElapsed)
+        this.info.totalHourlyHandledFiles := settings.totalHandledFiles / 
+
+
         LV_ModifyCol() ; columns are adjusted to fit the contents of the rows
     }
 
@@ -29,10 +40,10 @@ class class_guiStats {
 		this.Events := []
 		this.Events["Close"] := this.Close.Bind(this)
 
-        lvWidth := 350
+        lvWidth := 180
 
         ; controls
-        Gui % this.hwnd ":Add", ListView, % " w" lvWidth, Stat|Value
+        Gui % this.hwnd ":Add", ListView, % " w" lvWidth " h160", Stat|Value
 
         ; show
 		this.Show()

@@ -1,11 +1,12 @@
 #SingleInstance, force
-#NoEnv
 
 OnExit("ExitFunc")
-global g_debug := true
+global g_debug := false
 global settings := []
-global g__guiReview           ; holds class instance for saving position
-global g__guiStats            ; holds class instance for saving position
+global g__review := false                               ; holds class instance for saving moving scheduled deleted files to recycle bin on script close
+global g__guiReview := false                            ; holds class instance for saving position
+global g__guiStats  := false                            ; holds class instance for saving position
+global g__stats  := false                               ; holds class instance for saving stats when script closes
 global g_nullTimeStamp := A_YYYY A_MM A_DD 00 00 00
 loadSettings()
 startReviewing()
