@@ -22,6 +22,8 @@ loadSettings() {
 
     If !(settings.totalSecondsElapsed) ; += expression doesnt work with empty variables so set to 0 if not available
         settings.totalSecondsElapsed := 0
+    If !(settings.totalHandledFiles) ; += expression doesnt work with empty variables so set to 0 if not available
+        settings.totalHandledFiles := 0
 }
 
 saveSettings() {

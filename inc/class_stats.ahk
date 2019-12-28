@@ -3,6 +3,8 @@ class class_Stats {
         this.startTime := A_Now ; keep track of elapsed time
         this.remainingFiles := input ; keep track of processed files
         this.handledFiles := 0 ; keep track of processed files
+
+        this.UpdateStats()
     }
 
     AddAction() {
@@ -31,18 +33,27 @@ class class_Stats {
 
         this.info.totalHandledFiles := settings.totalHandledFiles
         this.info.totalSecondsElapsed := FormatTimeSeconds(settings.totalSecondsElapsed + this.elapsedSeconds)
-        this.info.totalHourlyHandledFiles := settings.totalHandledFiles / (settings.totalSecondsElapsed + this.elapsedSeconds)
+        this.info.totalHourlyHandledFiles := settings.totalHandledFiles / (settings.totalSecondsElapsed + this.elapsedSeconds) * 3600
 
         this.guiStats.Update(this.info)
     }
 
+    ResetStats() {
+        settings.totalHandledFiles := 0
+        settings.totalSecondsElapsed := 0
+        this.startTime := A_Now
+
+        this.UpdateStats()
+    }
+
     ShowGui() {
         If !(IsObject(this.guiStats)) { ; if gui not already created
-            this.guiStats := new class_guiStats ; create gui
+            this.guiStats := new class_guiStats(this) ; create gui
             g__guiStats := this.guiStats  ; holds class instance for saving position
         }
         else
             this.guiStats.Show()
+
         this.UpdateStats()
     }
 

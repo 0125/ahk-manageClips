@@ -27,8 +27,6 @@ class class_review {
         g__guiReview := this.guiReview ; holds class instance for saving position
         g__stats := this.Stats ; holds class instance for saving moving scheduled deleted files to recycle bin on script close
 
-        this.ShowStatsGui()
-
         ; start reviewing the first file
         this._PlayNextFile()
     }
@@ -68,9 +66,13 @@ class class_review {
 
         FileCreateDir, % settings.destinationRoot "\" destinationFolder ; create destination folder if it doesnt already exist
 
+        FileMove, % this.file, % newPath
+        If (ErrorLevel) {
+            msgbox, 64, , % A_ThisFunc ": FileMove error: Incorrect file name or file with this name already exists in destination"
+            return
+        }
         this.fileChanges.push({oldPath: this.file, newPath: newPath})
         this.Stats.AddAction() ; register positive action
-        FileMove, % this.file, % newPath
 
         this._PlayNextFile()
     }

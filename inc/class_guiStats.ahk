@@ -1,11 +1,15 @@
 class class_guiStats {
     static Instances := []
     
-    __New() {
+    __New(input) {
+        this.parentInstance := input
         this._Create()
     }
 
     Update(input) { ; object with info to display from class_stats
+        If !(this.hwnd)
+            return
+        
         Gui % this.hwnd ":Default" ; set default gui for gui commands to operate on
         LV_Delete()
         LV_Add(,"Passed time", input.PassedTime)
@@ -15,12 +19,7 @@ class class_guiStats {
 
         LV_Add(,"Total handled", input.totalHandledFiles)
         LV_Add(,"Total passed time", input.totalSecondsElapsed)
-        LV_Add(,"Total hourly", Round(input.totalHourlyHandledFiles, 2))
-
-        this.info.totalHandledFiles := FormatTimeSeconds(settings.totalHandledFiles)
-        this.info.totalSecondsElapsed := FormatTimeSeconds(settings.totalSecondsElapsed)
-        this.info.totalHourlyHandledFiles := settings.totalHandledFiles / 
-
+        LV_Add(,"Total hourly", Round(input.totalHourlyHandledFiles))
 
         LV_ModifyCol() ; columns are adjusted to fit the contents of the rows
     }
@@ -36,9 +35,12 @@ class class_guiStats {
         ; properties
 		Gui, New, +hwndhwnd
 		this.hwnd := hwnd
-		class_guiReview.Instances[hwnd] := this
+		class_guiStats.Instances[hwnd] := this
 		this.Events := []
 		this.Events["Close"] := this.Close.Bind(this)
+        this.Events["Contextmenu"] := this.Contextmenu.Bind(this)
+        this.Events["_guiStats_BtnResetStats"] := this._guiStats_BtnResetStats.Bind(this)
+        Gui % this.hwnd ":+AlwaysOnTop",
 
         lvWidth := 180
 
@@ -62,6 +64,17 @@ class class_guiStats {
         settings.guiStatsY := outY
 	}
 	
+    Contextmenu() {
+        Menu, MyMenu, Add
+        Menu, MyMenu, DeleteAll
+        Menu, MyMenu, Add, Reset stats, guiStats_BtnResetStats
+        Menu, MyMenu, Show
+    }
+
+    _guiStats_BtnResetStats() {
+        this.parentInstance.ResetStats()
+    }
+
 	Destroy() {
         class_guiReview.Instances := ""
 		this.Events := ""
@@ -71,3 +84,9 @@ class class_guiStats {
 		Gui % this.hwnd ":Destroy"
 	}
 }
+
+guiStats_BtnResetStats:
+    for a, b in class_guiStats.Instances 
+		if (a = WinExist("A")+0) ; if instance gui hwnd is identical to currently active window hwnd
+			b["Events"]["_guiStats_BtnResetStats"].Call()
+return

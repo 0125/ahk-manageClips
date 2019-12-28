@@ -47,7 +47,7 @@ class class_guiReview {
 		SplitPath, % input, OutFileName, OutDir, OutExtension, OutNameNoExt, OutDrive
 		
 		; edit control
-		; GuiControl % this.hwnd ":", Edit1, % OutNameNoExt
+		GuiControl % this.hwnd ":", Edit1, ; empty edit
 		; ControlSend, Edit1, ^a, % "ahk_id " this.hwnd
 
         ; gui title
