@@ -12,10 +12,10 @@ class reviewClass {
             guiSetRootDirs()
 
         ; setup classes
+        this.vlc := new vlcClass
+        this.file := new fileHandlerClass
         this.guiReview := new guiReviewClass("Review")
         this.guiReview.Setup()
-        this.file := new fileHandlerClass
-        this.vlc := new vlcClass
 
         ; start reviewing the first clip
         this._PlayNextFile()

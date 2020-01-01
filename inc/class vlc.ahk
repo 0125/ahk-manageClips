@@ -2,6 +2,8 @@
 
 class vlcClass {
     __New() {
+        ; run vlc on class start if it is not already so guiReview can set +Owner over vlc
+        this._CheckVlc()
     }
 
     Play(input) {

@@ -48,7 +48,7 @@ class fileHandlerClass {
         ; save file
         FileMove, % this.file, % newPath, 0
         If (ErrorLevel) {
-            msgbox, 64, , % A_ThisFunc ": FileMove error! `n`nProbable reasons: `n`n- Target save path '" newPath "' already exists `n`n - Strange characters were used. Prohibited: \ / : * ? "" < > |"
+            msgbox, 64, , % A_ThisFunc ": FileMove error! `n`nProbable reasons: `n`n- Target save path '" newPath "' already exists `n`n - Strange characters were used. `n`n - File name is too long `n`nProhibited: \ / : * ? "" < > |"
             return false
         }
 

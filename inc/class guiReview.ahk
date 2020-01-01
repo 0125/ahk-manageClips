@@ -100,6 +100,8 @@ class guiReviewClass extends gui {
 
         ; check if vlc hwnd has changed
         hwnd := WinExist("ahk_exe vlc.exe")
+        If !(hwnd)
+            return
         If !(vlcHwnd = hwnd) or !(vlcHwnd) { ; vlc hwnd has changed or not yet been set
             vlcHwnd := hwnd
             this.Owner(vlchwnd)
