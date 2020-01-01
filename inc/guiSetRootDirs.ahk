@@ -11,10 +11,10 @@ guiSetRootDirs() {
     ; controls
     Gui % hwnd ":Add", GroupBox, % "w" totalWidth " h120", Select root folders
     Gui % hwnd ":Add", text, % "xp+" 9 " yp+" 20, Source
-    Gui % hwnd ":Add", edit, % "w" editWidth " section", % settings.sourceRoot
+    Gui % hwnd ":Add", edit, % "w" editWidth " section", % settings.sourceRootDir
     Gui % hwnd ":Add", button, % "x+" margin " ys-1 w" btnWidth " gguiSetRootDirs_BtnBrowseEdit1", Browse
     Gui % hwnd ":Add", text, xs, Destination
-    Gui % hwnd ":Add", edit, % "w" editWidth " section", % settings.destinationRoot
+    Gui % hwnd ":Add", edit, % "w" editWidth " section", % settings.destinationRootDir
     Gui % hwnd ":Add", button, % "x+" margin " ys-1 w" btnWidth " gguiSetRootDirs_BtnBrowseEdit2", Browse
     Gui % hwnd ":Add", button, % "x" 10 " w" totalWidth " gguiSetRootDirs_BtnSubmit", Save
 
@@ -56,14 +56,14 @@ guiSetRootDirs_BtnSubmit:
         msgbox, 64, , % A_ThisLabel ": Source folder does not exist"
         return
     }
-    settings.sourceRoot := RTrim(Output, "\")
+    settings.sourceRootDir := RTrim(Output, "\")
 
     Output := ControlGetText("Edit2", "ahk_id " WinActive("A"))
     If !FolderExist(Output) {
         msgbox, 64, , % A_ThisLabel ": Destination folder does not exist"
         return
     }
-    settings.destinationRoot := RTrim(Output, "\")
+    settings.destinationRootDir := RTrim(Output, "\")
 
     Gui % WinActive("A") ":Destroy"
 return

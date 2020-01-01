@@ -1,13 +1,10 @@
 {
   "destinationRoot": "E:\\Videos\\Game clips\\Sorted",
-  "ForwardSeconds": 50,
-  "guiReviewX": 6,
-  "guiReviewY": 4,
-  "guiStatsX": 1713,
-  "guiStatsY": 882,
-  "HourlyHandledFiles": 0,
-  "sourceRoot": "E:\\Videos\\Game clips\\Unsorted\\1 sort these games",
-  "totalHandledFiles": 181,
-  "totalSecondsElapsed": 4448,
+  "destinationRootDir": "E:\\Videos\\Game clips\\Sorted",
+  "ForwardSeconds": "5",
+  "guiReviewX": 1449,
+  "guiReviewY": 393,
+  "sourceRoot": "E:\\Videos\\Game clips\\Unsorted\\Left 4 Dead 2",
+  "sourceRootDir": "E:\\Videos\\Game clips\\Unsorted.l4d2",
   "vlcExePath": "D:\\Apps\\VLC\\vlc.exe"
 }

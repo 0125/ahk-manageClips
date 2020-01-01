@@ -1,71 +1,77 @@
 ExitFunc(ExitReason, ExitCode) {
-    g__guiReview.SavePos()
-    g__review.RecycleFiles()
-    g__guiStats.SavePos()
-    g__Stats.SaveStats()
-    
+    ; trigger review class __Delete method
+    review := ""
+
+    ; write settings to file
     saveSettings()
-    class_vlc._Kill()
 }
 
 loadSettings() {
-    ; load object from file
+    ; read settings from file
     If (FileExist(A_ScriptDir "\settings.json")) {
-        FileRead, OutputVar, % A_ScriptDir "\settings.json"
-        OutputObj := json.load(OutputVar,,2)
-        If (IsObject(OutputObj))
-            settings := json.load(OutputVar,,2)
+        FileRead, Output, % A_ScriptDir "\settings.json"
+        OutputObj := json.load(Output,,2)
+        If (IsObject(OutputObj)) ; only load settings if file could be read correctly
+            settings := json.load(Output,,2)
     }
-
-    If !(settings.vlcExePath)
-        setVlcPath()
-
-    If !(settings.totalSecondsElapsed) ; += expression doesnt work with empty variables so set to 0 if not available
-        settings.totalSecondsElapsed := 0
-    If !(settings.totalHandledFiles) ; += expression doesnt work with empty variables so set to 0 if not available
-        settings.totalHandledFiles := 0
 }
 
 saveSettings() {
+    ; write settings to file
     FileDelete, % A_ScriptDir "\settings.json"
     FileAppend, % json.dump(settings,,2), % A_ScriptDir "\settings.json"
 }
 
-setVlcPath() {
-    FileSelectFile, SelectedFile, 3, , Open a file, Executables (*.exe)
-    if (SelectedFile = "")
-        exitapp
-    if !(InStr(SelectedFile, "vlc.exe")) {
-        msgbox, 64, , % A_ThisFunc ": Incorrect file specified, select vlc.exe"
-        setVlcPath()
-        return
-    }
-    settings.vlcExePath := SelectedFile
+m(x*){
+	for a,b in x
+		list.=b "`n"
+	MsgBox,0, % A_ScriptName, % list
 }
 
-FormatTimeSeconds(input) {
-    If input is not Integer
-    {
-        msgbox, 64, , % A_ThisFunc ": Incorrect input format. Input is not integer`n`nClosing.."
-        exitapp
+getVideoDuration(input) {
+    ; open mediainfo.dll instance
+    hnd := MediaInfo_New()
+
+    ; open file in mediainfo.dll
+    MediaInfo_Open( hnd, input )
+ 
+    ; check if file is a video
+    If ( MediaInfo_Get( hnd, 1,0, "StreamKind", 1 ) <> "Video" ) {
+        msgbox, 64, , % A_ThisFunc ": '" input "' is not a video file!"
+        MediaInfo_Close( hnd )
+        return
     }
+
+    ; get video duration timestamp
+    durationTimestamp := MediaInfo_Get( hnd, 1,0, "Duration/String3", 1 )
+    durationTimestamp := SubStr(durationTimestamp, 1, InStr(durationTimestamp, ".") - 1) ; remove miliseconds
+
+    ; convert timestamp to seconds
+    digitsArr := StrSplit(durationTimestamp , ":")
+    output += digitsArr[1] * 3600 ; hours
+    output += digitsArr[2] * 60 ; minutes
+    output += digitsArr[3] ; seconds
+
+    ; close file in mediainfo.dll
+    MediaInfo_Close( hnd )
     
-    ; format amount of seconds for displaying
-    displayTime := g_nullTimeStamp
-    EnvAdd, displayTime, input, Seconds
-    FormatTime, OutputVar , % displayTime, HH:mm:ss
-    return OutputVar
+    return output
 }
 
-startReviewing() {
-    If (g_debug) {
-        ; myStats := new class_Stats(50)
-        startReview := new class_review
-        ; msgbox end of script
-        return
-    }
+MediaInfo_New() {
+ Return DllCall( "mediainfo\MediaInfo" ( A_IsUnicode ? "" : "A" ) "_New" )
+}
 
+MediaInfo_Open( hnd, MediaFile ) {
+ Return DllCall( "mediainfo.dll\MediaInfo" ( A_IsUnicode ? "" : "A" ) "_Open", UInt,hnd
+               , Str,MediaFile, UInt )
+}
 
-    guiSetRootDirs()
-    startReview := new class_review
+MediaInfo_Get( hnd, StrK=0, StrN=0, Comm="", InfK=0, Srch=0 ) {
+ Return DllCall( "mediainfo.dll\MediaInfo" ( A_IsUnicode ? "" : "A" ) "_Get", UInt,hnd
+               , Int,StrK, Int,StrN, Str,Comm, Int,InfK, Int,Sech, Str )
+}
+
+MediaInfo_Close( hnd ) {
+ Return DllCall( "mediainfo\MediaInfo" ( A_IsUnicode ? "" : "A" ) "_Close", UInt,hnd )
 }
