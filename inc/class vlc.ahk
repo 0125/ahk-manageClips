@@ -127,8 +127,9 @@ class vlcClass {
     _isFileOpen(input) {
         ; see if input is valid
         If !(FileExist(input)) {
-            msgbox, 4160, , % A_ThisFunc ": Specified file does not exist!`n`nClosing.."
-            exitapp
+            msgbox, 4160, , % A_ThisFunc ": Specified file '" input "' does not exist!`n`nReloading.."
+            reload
+            return
         }
         
         ; get vlc window title

@@ -2,11 +2,11 @@ class reviewClass {
     __New() {
         ; get source and destination folders
         If (g_debug) {
-            ; settings.sourceRootDir := "D:\Downloads\workFolderGameClips\Unsorted"
-            ; settings.destinationRootDir := "D:\Downloads\workFolderGameClips\Sorted"
+            settings.sourceRootDir := "D:\Downloads\workFolderGameClips\Unsorted"
+            settings.destinationRootDir := "D:\Downloads\workFolderGameClips\Sorted"
 
-            settings.sourceRootDir := "E:\Videos\Game clips\Unsorted.l4d2"
-            settings.destinationRootDir := "E:\Videos\Game clips\Sorted"
+            ; settings.sourceRootDir := "E:\Videos\Game clips\Unsorted.l4d2"
+            ; settings.destinationRootDir := "E:\Videos\Game clips\Sorted"
         }
         else
             guiSetRootDirs()
@@ -22,6 +22,11 @@ class reviewClass {
     }
 
     __Delete() {
+        ; save guiReview position & recycle deleted files
+        this._OnExit()
+    }
+
+    _OnExit() {
         ; save gui position
         this.guiReview.SavePos()
 
@@ -60,10 +65,11 @@ class reviewClass {
 
         ; check if the file was saved successfully
         If !(result)
-            return
+            return false
 
         ; start reviewing the next file
         this._PlayNextFile()
+        return true
     }
 
     Delete() {

@@ -4,7 +4,6 @@ class guiReviewClass extends gui {
     Setup() {
         ; events
         this.Events["Close"] := this.Close.Bind(this)
-        this.Events["_afterButtonPress"] := this._afterButtonPress.Bind(this)
         this.Events["_BtnDelete"] := this.Delete.Bind(this)
 		this.Events["_BtnPlay"] := this.Play.Bind(this)
 		this.Events["_BtnUndo"] := this.Undo.Bind(this)
@@ -34,17 +33,29 @@ class guiReviewClass extends gui {
 
         ; show
         this.Pos(settings.guiReviewX, settings.guiReviewY)
-        
-        ; reset edit control & focus input + set guiReview as owner of vlc
-        this._afterButtonPress()
+        this.ControlFocus("Edit1")
+        this._SetVlcOwner()
     }
 
     Delete() {
         review.delete()
+
+        ; edit control actions
+        this.ControlFocus("Edit1")
+        this.SetText()
+
+        ; set gui as owner of current instance of vlc if not already
+        this._SetVlcOwner()
     }
 
     Play() {
         review.Play()
+
+        ; edit control actions
+        this.ControlFocus("Edit1")
+
+        ; set gui as owner of current instance of vlc if not already
+        this._SetVlcOwner()
     }
 
     Forward() {
@@ -63,35 +74,54 @@ class guiReviewClass extends gui {
             return
         }
         settings.ForwardSeconds := OutputVar
+
+        ; edit control actions
+        this.ControlFocus("Edit1")
+
+        ; set gui as owner of current instance of vlc if not already
+        this._SetVlcOwner()
     }
 
     SaveAs() {
         review.SaveAs()
+
+        ; edit control actions
+        this.ControlFocus("Edit1")
+
+        ; set gui as owner of current instance of vlc if not already
+        this._SetVlcOwner()
     }
 
     Save() {
-        review.Save()
+        result := review.Save()
+
+        ; edit control actions
+        If (result) ; only clear edit control if file was actually saved
+            this.SetText()
+
+        ; set gui as owner of current instance of vlc if not already
+        this._SetVlcOwner()
     }
 
     Undo() {
         review.Undo()
+
+        ; focus edit control
+        this.ControlFocus("Edit1")
+        this.SetText()
+
+        ; set gui as owner of current instance of vlc if not already
+        this._SetVlcOwner()
     }
 
     Stats() {
         msgbox % A_ThisFunc
-    }
 
-    _afterButtonPress() {
-        ; reset edit control & focus input
-        this._FocusEdit()
-
-        ; make guiReview owner of vlc
-        this._SetVlcOwner()
-    }
-
-    _FocusEdit() {
-        this.SetText()
+        ; focus edit control
         this.ControlFocus("Edit1")
+
+        ; set gui as owner of current instance of vlc if not already
+        this._SetVlcOwner()
     }
 
     _SetVlcOwner() {
@@ -130,17 +160,13 @@ guiReview_BtnHandler:
 
     ; call the class's method
     for a, b in guiReviewClass.Instances 
-		if (a = A_Gui+0) {
+		if (a = A_Gui+0)
 			b["Events"]["_Btn" OutputControlText].Call()
-			b["Events"]["_afterButtonPress"].Call()
-        }
 return
 
 guiReview_HotkeyEnter:
 	; call the class's method
     for a, b in guiReviewClass.Instances 
-		if (a = WinExist("A")+0) { ; if instance gui hwnd is identical to currently active window hwnd
+		if (a = WinExist("A")+0) ; if instance gui hwnd is identical to currently active window hwnd
 			b["Events"]["_HotkeyEnter"].Call()
-            b["Events"]["_afterButtonPress"].Call()
-        }
 return

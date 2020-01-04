@@ -1,10 +1,10 @@
 {
   "destinationRoot": "E:\\Videos\\Game clips\\Sorted",
-  "destinationRootDir": "E:\\Videos\\Game clips\\Sorted",
+  "destinationRootDir": "D:\\Downloads\\workFolderGameClips\\Sorted",
   "ForwardSeconds": "2",
-  "guiReviewX": 1446,
-  "guiReviewY": 0,
+  "guiReviewX": 1443,
+  "guiReviewY": 5,
   "sourceRoot": "E:\\Videos\\Game clips\\Unsorted\\Left 4 Dead 2",
-  "sourceRootDir": "E:\\Videos\\Game clips\\Unsorted.l4d2",
+  "sourceRootDir": "D:\\Downloads\\workFolderGameClips\\Unsorted",
   "vlcExePath": "D:\\Apps\\VLC\\vlc.exe"
 }

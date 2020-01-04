@@ -37,9 +37,19 @@ class fileHandlerClass {
 
     Save(input) { ; input = new file name
         ; get destination folder
+        SplitPath, % settings.sourceRootDir, OutFileName, OutDir, OutExtension, OutNameNoExt, OutDrive
+        sourceRootDirName := OutFileName
         SplitPath, % this.file, OutFileName, OutDir, OutExtension, OutNameNoExt, OutDrive
         SlashedPath := StrSplit(OutDir, "\")
-        destinationFolder := SlashedPath[SlashedPath.length()] ; get destination folder
+        loop % SlashedPath.length() ; get name of first subfolder in sourceRootDir eg. 'Left 4 Dead 2' instead of using a subfolder's name in 'Left 4 Dead 2'
+        {
+            If (SlashedPath[A_Index] = sourceRootDirName) {
+                Output := A_Index + 1
+                break
+            }
+        }
+        destinationFolder := SlashedPath[Output] ; get destination folder
+
         FileCreateDir, % settings.destinationRootDir "\" destinationFolder
 
         ; build destination path
@@ -81,6 +91,8 @@ class fileHandlerClass {
     _checkFilesAvailable() {
         If !(this.fileList.length()) {
             msgbox, 64, , % A_ThisFunc ": No mp4 files found in source root!`n`nReloading.."
+            ; save guiReview position & recycle deleted files
+            review._OnExit()
             reload
             return
         }
