@@ -100,5 +100,9 @@ class reviewClass {
     _PlayNextFile() {
         this.clip := this.file.Get()
         this.Play()
+
+        ; put clip title in edit gui review edit field
+        SplitPath, % this.clip, OutFileName, OutDir, OutExtension, OutNameNoExt, OutDrive
+        this.guiReview.SetText("Edit1", OutNameNoExt)
     }
 }

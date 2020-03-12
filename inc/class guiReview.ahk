@@ -38,11 +38,9 @@ class guiReviewClass extends gui {
     }
 
     Delete() {
+        ; this.SetText()
         review.delete()
-
-        ; edit control actions
         this.ControlFocus("Edit1")
-        this.SetText()
 
         ; set gui as owner of current instance of vlc if not already
         this._SetVlcOwner()
@@ -96,19 +94,17 @@ class guiReviewClass extends gui {
         result := review.Save()
 
         ; edit control actions
-        If (result) ; only clear edit control if file was actually saved
-            this.SetText()
+        ; If (result) ; only clear edit control if file was actually saved
+        ;     this.SetText()
 
         ; set gui as owner of current instance of vlc if not already
         this._SetVlcOwner()
     }
 
     Undo() {
-        review.Undo()
-
-        ; focus edit control
+        ; this.SetText()
+        review.undo()
         this.ControlFocus("Edit1")
-        this.SetText()
 
         ; set gui as owner of current instance of vlc if not already
         this._SetVlcOwner()
