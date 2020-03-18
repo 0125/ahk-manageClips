@@ -32,7 +32,7 @@ class reviewClass {
 
         ; move deleted files into the recycle bin,
         ; using a separate script so this one doesnt hang when there is a lot of files
-        run % A_AhkPath A_Space g_recycleScriptPath A_Space """" settings.sourceRootDir """"
+        run % A_AhkPath A_Space """" g_recycleScriptPath """" A_Space """" settings.sourceRootDir """"
     }
 
     Play() {
