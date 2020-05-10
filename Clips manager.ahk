@@ -1,6 +1,7 @@
 ; misc
     #SingleInstance, force
     #NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
+    Menu, Tray, Icon, % A_ScriptDir "\res\app.png"
     OnExit("ExitFunc")
     DllCall( "LoadLibrary", Str, A_ScriptDir "\res\MediaInfo.dll" ) ; mediainfo.dll needs to be the same version as autohotkey, 64 or 32 bit
 
