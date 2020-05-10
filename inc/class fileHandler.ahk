@@ -1,100 +1,103 @@
-class fileHandlerClass {
-
-    __New() {
-        ; get list of files
-        this.fileList := []
-        loop, files, % settings.sourceRootDir "\*.mp4", FR
-            this.fileList.push(A_LoopFileFullPath)
-
-        ; create object for storing changes so they can be undone
-        this.changes := []
-
-        ; check if files are available
-        this._checkFilesAvailable()
-    }
-
-    Get() {
-        ; check if files are available
-        this._checkFilesAvailable()
-        
-        ; get the next file
-        this.file := this.fileList.pop()
-
-        return this.file
-    }
-
-    Delete() {
-        ; build path to rename file to
-        SplitPath, % this.file, OutFileName, OutDir, OutExtension, OutNameNoExt, OutDrive
-        newPath := OutDir "\" OutFileName ".deleted"
-
-        ; schedule file for deletion by renaming it
-    FileMove, % this.file, % newPath
-
-        ; save change
-        this.changes.push({oldPath: this.file, newPath: newPath})
-    }
-
-    Save(input) { ; input = new file name
-        ; get destination folder
-        SplitPath, % settings.sourceRootDir, OutFileName, OutDir, OutExtension, OutNameNoExt, OutDrive
-        sourceRootDirName := OutFileName
-        SplitPath, % this.file, OutFileName, OutDir, OutExtension, OutNameNoExt, OutDrive
-        SlashedPath := StrSplit(OutDir, "\")
-        loop % SlashedPath.length() ; get name of first subfolder in sourceRootDir eg. 'Left 4 Dead 2' instead of using a subfolder's name in 'Left 4 Dead 2'
-        {
-            If (SlashedPath[A_Index] = sourceRootDirName) {
-                Output := A_Index + 1
-                break
-            }
+class class_FileHandler {
+    LoadClips() {
+        If !(FolderExist(settings.clipSourcePath)) {
+            msgbox, 4160, , % A_ThisFunc ": Source folder does not exist!`n`nCurrently unhandled, closing.."
+            exitapp
         }
-        destinationFolder := SlashedPath[Output] ; get destination folder
+        
+        this.changes := {}
 
-        FileCreateDir, % settings.destinationRootDir "\" destinationFolder
+        ; get clips list
+        this.clips := {}
+        Loop, Files, % settings.clipSourcePath "\*.mp4", FR ; loop all files including subfolders
+            this.clips.push(A_LoopFileFullPath)
 
-        ; build destination path
-        newPath := settings.destinationRootDir "\" destinationFolder "\" input "." OutExtension
+        this._NextClip()
+    }
 
-        ; save file
-        FileMove, % this.file, % newPath, 0
+    _NextClip() {
+        If (this.clips.length() = 0) {
+            msgbox, 4160, , % A_ThisFunc ": Finished reviewing!"
+            reload
+        }
+        
+        this.clip := this.clips.pop()
+
+        If !(FileExist(this.clip))
+            msgbox, 4160, , % A_ThisFunc ": Currently selected clip does not exist!"
+
+        ; update manage gui
+        SplitPath, % this.clip, OutFileName, OutDir, OutExtension, OutNameNoExt
+        manageGui.SetText("edit1", OutNameNoExt)
+        manageGui.SelectText("Edit1")
+        _manageGui := manageGui.hwnd
+        If (this.changes.length())
+            GuiControl %_manageGui%: Enable, Undo
+        else
+            GuiControl %_manageGui%: Disable, Undo
+        manageGui.SetDefault() ; set default gui for SB_SetText
+        SB_SetText("Remaining:`t`t" this.clips.length() + 1, 1)
+        return
+    }
+
+    Save() {
+        vlc.Stop()
+
+        SplitPath, % this.clip, clipOutFileName, clipOutDir, clipOutExtension, clipOutNameNoExt
+
+        ; get game folder
+        game := StrReplace(this.clip, settings.clipSourcePath "\")
+        game := SubStr(game, 1, InStr(game, "\") - 1)
+        FileCreateDir, % settings.clipDestinationPath "\" game
+
+        newPath := settings.clipDestinationPath "\" game "\" manageGui.GetText("Edit1") "." clipOutExtension
+
+        FileMove, % this.clip, % newPath, 0
         If (ErrorLevel) {
-            msgbox, 64, , % A_ThisFunc ": FileMove error! `n`nProbable reasons: `n`n- Target save path '" newPath "' already exists `n`n - Strange characters were used. `n`n - File name is too long `n`nProhibited: \ / : * ? "" < > |"
+            msgbox, 4160, , % A_ThisFunc ": FileMove error! `n`nProbable reasons: `n`n- Target save path '" newPath "' already exists `n`n - Strange characters were used. `n`n - File name is too long `n`nProhibited: \ / : * ? "" < > |"
             return false
         }
 
-        ; save change
-        this.changes.push({oldPath: this.file, newPath: newPath})
+        this.changes.push({oldPath:this.clip, newPath:newPath})
+
+        stats.Add()
+        this._NextClip()
+        return true
+    }
+
+    Delete() {
+        If !FileExist(this.clip)
+            return false
+
+        vlc.Stop()
+
+        SplitPath, % this.clip, OutFileName, OutDir, OutExtension, OutNameNoExt
+        newPath := OutDir "\" OutFileName ".deleted"
+        FileMove, % this.clip, % newPath, 0
+
+        this.changes.push({oldPath:this.clip, newPath:newPath})
+
+        stats.Add()
+        this._NextClip()
         return true
     }
 
     Undo() {
-        ; check if any changes were made
-        If !(this.changes.length()) {
-            msgbox, 64, , % A_ThisFunc ": Nothing to undo!"
+        ; if no changes available
+        If !(this.changes.length())
             return false
-        }
 
-        ; add current file back to review list
-        this.fileList.push(this.file)
+        vlc.Stop()
 
-        ; get latest change
-        input := this.changes.pop()
+        change := this.changes.pop()
+        
+        FileMove, % change.newPath, % change.oldPath
+        
+        this.clips.push(this.clip) ; re-add currently selected clip back to queue
+        this.clips.push(change.oldPath) ; re-add undone cip back to queue
 
-        ; undo the change
-        FileMove % input.newPath, % input.oldPath
-
-        ; add restored file back to review list
-        this.fileList.push(input.oldPath)
+        stats.Del()
+        this._NextClip() ; pick next clip from the queue, aka the one just re-added
         return true
-    }
-
-    _checkFilesAvailable() {
-        If !(this.fileList.length()) {
-            msgbox, 64, , % A_ThisFunc ": No mp4 files found in source root!`n`nReloading.."
-            ; save guiReview position & recycle deleted files
-            review._OnExit()
-            reload
-            return
-        }
     }
 }

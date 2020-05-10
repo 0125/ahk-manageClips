@@ -1,10 +1,11 @@
 {
-  "destinationRoot": "E:\\Videos\\Game clips\\Sorted",
-  "destinationRootDir": "D:\\Videos\\Games",
-  "ForwardSeconds": "12",
-  "guiReviewX": 483,
-  "guiReviewY": 618,
-  "sourceRoot": "E:\\Videos\\Game clips\\Unsorted\\Left 4 Dead 2",
-  "sourceRootDir": "D:\\Videos\\Captures",
+  "clipDestinationPath": "D:\\Videos\\Games",
+  "clipSourcePath": "D:\\Videos\\Captures",
+  "ForwardSeconds": 6,
+  "manageGuiX": 1422,
+  "manageGuiY": 532,
+  "stats": {
+    "TotalClips": 150
+  },
   "vlcExePath": "F:\\Programs\\VLC\\vlc.exe"
 }

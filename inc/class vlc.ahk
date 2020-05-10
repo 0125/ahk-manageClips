@@ -1,65 +1,78 @@
-; msgbox 4160 = ; Icon Asterisk (info) 64 + System Modal (always on top) 4096
-
-class vlcClass {
+class class_vlc {
     __New() {
-        ; run vlc on class start if it is not already so guiReview can set +Owner over vlc
-        this._CheckVlc()
+        ; prompt vlc exe path if not available, or valid. save to settings file
+        If (!FileExist(settings.vlcExePath)) {
+            FileSelectFile, vlcExePath, 3, , Please specifiy VLC media players executable: 'vlc.exe', Executables (*.exe) ; 3 = file & path must exist
+            SplitPath, vlcExePath, OutFileName, OutDir, OutExtension, OutNameNoExt, OutDrive
+            If !(vlcExePath) or !(OutFileName = "vlc.exe") {
+                msgbox, 4160, , %A_ThisFunc%: vlc.exe not specified!`n`nClosing..
+                exitapp
+            }
+            settings.vlcExePath := vlcExePath
+        }
     }
 
-    Play(input) {
-        ; check if file exists
-        If !(FileExist(input)) {
-            msgbox, 4160, , % A_ThisFunc ": '" input "' does not exist!`n`nReloading.."
+    Play() {
+        If (!FileExist(file.clip)) {
+            msgbox, 4160, , %A_ThisFunc%: File does not exist!
             reload
             return
         }
+        
+        this.Setup()
 
-        ; check if vlc is running correctly
-        this._CheckVlc()
+        Run, % settings.vlcExePath A_Space """" file.clip """"
+        clipboard := settings.vlcExePath A_Space """" file.clip """"
 
-        ; close current clip to begin playing from the start
-        this.Stop(input)
-
-        ; play file
-        run % settings.vlcExePath A_Space """" input """"
-
-        ; wait for file to be open in vlc
-        loop {
-            If (this._isFileOpen(input)) ; wait until specified file is in vlc window title
+        loop ; wait until file is opened
+            If FileOpened(file.clip)
                 break
-            sleep 10
-        }
 
-        ; scroll clip to set amount of seconds
-        this._Forward(input)
+        this._Forward()
     }
 
-    Stop(input) {
-        ; check if vlc is running correctly
-        this._CheckVlc()
-        ; close file
-        this._PerformAction("stopPlayback")
+    Stop() {
+        this.Setup()
+    
+        ControlSend, , s, % this.ahkid
 
-        ; wait until file is fully closed
-        loop {
-            If !(this._isFileOpen(input))
+        loop { ; wait until file is closed
+            WinGetTitle, vlcTitle, % this.ahkid
+            If (vlcTitle = "VLC media player")
                 break
-            sleep 10
         }
     }
 
-    _Forward(input) {
-        ; check if forwarding is enabled
-        If !(settings.forwardSeconds)
+    Setup() {
+        WinGet, vlcTitles, List, ahk_exe vlc.exe ; count open vlc windows
+        If WinExist(this.ahkid) and (vlcTitles = 1) ; vlc is running, without sub menus open and window handle is stored
+            return
+        
+        If (vlcTitles > 1) {
+            msgbox, 4160, , % A_ThisFunc ": Found multiple VLC windows! `n`nReminder to enable VLC setting: 'Allow only one instance'"
+            this._Restart()
+        }
+
+        If !(WinExist("ahk_exe vlc.exe"))
+            this._Restart()
+
+        WinGet, hwnd, ID, ahk_exe vlc.exe
+        this.hwnd := hwnd
+        this.ahkid := "ahk_id " hwnd
+
+        WinActivate, % this.ahkid
+        manageGui.Options("+Owner" this.hwnd)
+        WinActivate, % manageGui.ahkid
+    }
+
+    _Forward() {
+        If !(settings.ForwardSeconds)
             return
 
-        ; check if vlc is running correctly
-        this._CheckVlc()
-
         ; calculate amount of seconds to skip using the video duration
-        clipDuration := getVideoDuration(input)
+        clipDuration := getVideoDuration(file.clip)
         If (clipDuration < settings.forwardSeconds) {
-            TrayTip, % A_ScriptName, % "Clip is shorter then amount of seconds to forward ( " settings.forwardSeconds " ) !"
+            TrayTip, % A_ScriptName, % "Clip is shorter then amount of seconds to forward ( " settings.ForwardSeconds " ) !"
             return
         }
         remainingSeconds := clipDuration - settings.forwardSeconds ; set total amount of seconds to skip forward
@@ -94,119 +107,25 @@ class vlcClass {
         }
 
         ; execute skips
+        sleep 150 ; give vlc some time to completely load the clip
+
         loop, % 300skip
-            this._PerformAction("300skip")
+            ControlSend, , ^!{right}, % this.ahkid
 
         loop, % 60skip
-            this._PerformAction("60skip")
+            ControlSend, , ^{right}, % this.ahkid
 
         loop, % 10skip
-            this._PerformAction("10skip")
+            ControlSend, , {right}, % this.ahkid
 
         loop, % 3skip
-            this._PerformAction("3skip")
+            ControlSend, , +{right}, % this.ahkid
+
     }
 
-    _PerformAction(input) {
-        ; set key(s) to send to vlc
-        If (input = "stopPlayback")
-            output := "s"
-        If (input = "300skip")
-            output = "^!{right}"
-        If (input = "60skip")
-            output = "^{right}"
-        If (input = "10skip")
-            output = "{right}"
-        If (input = "3skip")
-            output = "+{right}"
-
-        ; send keys
-        ControlSend, , % output, % "ahk_id " this.hwnd
-    }
-
-    _isFileOpen(input) {
-        ; see if input is valid
-        If !(FileExist(input)) {
-            msgbox, 4160, , % A_ThisFunc ": Specified file '" input "' does not exist!`n`nReloading.."
-            reload
-            return
-        }
-        
-        ; get vlc window title
-        WinGetTitle, vlcTitle, % "ahk_id " this.hwnd
-        
-        ; check if vlc has any sub guis open
-        If !(InStr(vlcTitle, "VLC Media Player")) and !(vlcTitle = "") and !(vlcTitle = "vlc") { ; if vlc title is empty or contains 'vlc' while vlc is running, fullscreen is activated
-            msgbox, 4160, , % A_ThisFunc ": WinGetTitle Could not read VLC main window title!`n`nFound title: '" vlcTitle "'`n`nReloading.."
-            reload
-            return
-        }
-
-        ; get file name from input path
-        SplitPath, % input, OutFileName, OutDir, OutExtension, OutNameNoExt, OutDrive
-
-        ; check if file name is open in vlc
-        If (InStr(vlcTitle, OutNameNoExt))
-            return true
-        else
-            return false
-    }
-
-    _CheckVlc() {
-        ; if vlc exe path is not available or not valid
-        If !(settings.vlcExePath) or !(FileExist(settings.vlcExePath))
-            this._SelectPath()
-        
-        ; if there is more then one instance
-        WinGet, Output, List
-        loop % Output {
-            WinGet, OutputProcess, ProcessName, % "ahk_id " Output%A_Index%
-            If (OutputProcess = "vlc.exe") {
-                ; check if found process is vlc fullscreen window
-                WinGetTitle, vlcTitle, % "ahk_id " Output%A_Index%
-                If (vlcTitle = "vlc")
-                    continue
-                
-                ; count process instance
-                vlcInstances++
-            }
-        }
-        If (vlcInstances > 1) {
-            msgbox, 4160, , % A_ThisFunc ": More then one (hidden) vlc instance running!`n`nDisable multiple vlc instances in settings and close excess`n`nReloading.."
-            reload
-            return
-        }
-
-        ; if vlc is hidden
-        If !(WinVisible("ahk_exe vlc.exe"))
-            Process, Close, vlc.exe
-
-        ; get vlc handle
-        If !(WinExist("ahk_exe vlc.exe")) {
-            run % settings.vlcExePath
-            WinWait, ahk_exe vlc.exe, , 10
-            If (ErrorLevel) {
-                msgbox, 4160, , % A_ThisFunc ": Could not find vlc.exe after 10 seconds, ran with: " settings.vlcExePath "`n`nClosing.."
-                exitapp
-            }
-        }
-        this.hwnd := WinExist("ahk_exe vlc.exe")
-    }
-
-    _SelectPath() {
-        ; prompt path select
-        FileSelectFile, SelectedFile, 3, , Open vlc.exe, Executables (*.exe)
-        if (SelectedFile = "")
-            exitapp
-        
-        ; check if selected path is correct
-        if !(InStr(SelectedFile, "vlc.exe")) {
-            msgbox, 4160, , % A_ThisFunc ": Incorrect file specified, select vlc.exe"
-            this._SelectPath()
-            return
-        }
-
-        ; save input
-        settings.vlcExePath := SelectedFile
+    _Restart() {
+        Process, Close, vlc.exe
+        Run, % settings.vlcExePath
+        WinWait, ahk_exe vlc.exe ; wait till vlc is opened. prevents a glitch where vlc opens video in a separate window
     }
 }

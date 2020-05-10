@@ -1,31 +1,35 @@
+FileOpened(input) {
+    FileMove, % input, % input, 0
+        return ErrorLevel
+}
+
 ExitFunc(ExitReason, ExitCode) {
-    ; trigger review class __Delete method
-    review := ""
-
-    ; write settings to file
-    saveSettings()
-}
-
-loadSettings() {
-    ; read settings from file
-    If (FileExist(A_ScriptDir "\settings.json")) {
-        FileRead, Output, % A_ScriptDir "\settings.json"
-        OutputObj := json.load(Output,,2)
-        If (IsObject(OutputObj)) ; only load settings if file could be read correctly
-            settings := json.load(Output,,2)
-    }
-}
-
-saveSettings() {
-    ; write settings to file
+    manageGui.SavePos()
+    stats.Save()
+    
     FileDelete, % A_ScriptDir "\settings.json"
     FileAppend, % json.dump(settings,,2), % A_ScriptDir "\settings.json"
+
+    run, % A_ScriptDir "\cleanSourceDirectory.ahk" A_Space """" settings.clipSourcePath """" ; recycle .deleted files & empty folders in source path
 }
 
-m(x*){
-	for a,b in x
-		list.=b "`n"
-	MsgBox,0, % A_ScriptName, % list
+; input = date time stamp eg. A_Now or A_YYYY A_MM A_DD 00 00 00
+getPassedTimeSince(input) {
+    output := A_Now
+    ; EnvAdd, output, 5, Seconds ; debugging: add 5 seconds to current time
+    EnvSub, output, input, Seconds ; amount of seconds passed since input
+
+    return output
+}
+
+; input = seconds
+; output = seconds formatted in HH:mm:ss format
+FormatTimeSeconds(input) {
+    DateTimeString := A_YYYY A_MM A_DD 00 00 00
+    EnvAdd, DateTimeString, input, Seconds ; add passed seconds to nulltime
+    FormatTime, output, % DateTimeString, HH:mm:ss ; format created timestamp into readable format
+
+    return output
 }
 
 getVideoDuration(input) {
