@@ -16,8 +16,8 @@
     global stats := new class_stats
 
 ; autoexec
-    ; pathGui := new class_pathGui("Please choose clip folders")
-    ; pathGui.Setup() ; prompt user for source and destination folders
+    pathGui := new class_pathGui("Please choose clip folders")
+    pathGui.Setup() ; prompt user for source and destination folders
     manageGui.Setup()
     file.LoadClips() ; get clip list from specified source path
     vlc.Play() ; play the first clip
