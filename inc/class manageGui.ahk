@@ -102,8 +102,9 @@ class class_manageGui extends gui {
 
     SavePos() {
         WinGetPos, manageGuiX, manageGuiY, manageGuiW, manageGuiH, % this.ahkid
-        settings.manageGuiX := manageGuiX
-        settings.manageGuiY := manageGuiY
+        If (manageGuiX < 0) or (manageGuiY < 0)
+            manageGuiX := "", manageGuiY := ""
+        settings.manageGuiX := manageGuiX, settings.manageGuiY := manageGuiY
     }
 
     MiscMenu() {
