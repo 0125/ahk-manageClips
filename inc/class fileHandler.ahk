@@ -19,6 +19,7 @@ class class_FileHandler {
         If (this.clips.length() = 0) {
             msgbox, 4160, , % A_ThisFunc ": Finished reviewing!"
             reload
+            pause ; prevent thread from continuing
         }
         
         this.clip := this.clips.pop()
