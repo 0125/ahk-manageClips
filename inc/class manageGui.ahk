@@ -10,11 +10,10 @@ class class_manageGui extends gui {
         this.Events["_HotkeyEnter"] := this.Save.Bind(this)
 
         ; properties
+        this.SetDefault()
         this.Margin(5, 5)
-        ; this.Options("+AlwaysOnTop")
-        ; this.Options("-border")
         this.Options("+LabelmanageGui_")
-
+        
         ; controls
         this.Add("Edit", "w390 section Limit255", "") ; 255 is windows max file name length
         this.Add("Button", "w140 x5 r2 gmanageGui_BtnHandler", "Delete")
