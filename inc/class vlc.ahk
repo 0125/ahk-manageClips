@@ -22,7 +22,6 @@ class class_vlc {
         this.Setup()
 
         Run, % settings.vlcExePath A_Space """" file.clip """"
-        clipboard := settings.vlcExePath A_Space """" file.clip """"
 
         loop ; wait until file is opened
             If FileOpened(file.clip)
