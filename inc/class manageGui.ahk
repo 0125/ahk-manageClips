@@ -72,10 +72,14 @@ class class_manageGui extends gui {
     SaveAs() {
         SplitPath, % file.clip, OutFileName, OutDir, OutExtension, OutNameNoExt, OutDrive
 
+        this.Disable() ; disable gui input
         FileSelectFile, SelectedFile, S3, % manageGui.GetText("Edit1"), Save As, %OutExtension% (*.%OutExtension%)
-        If !(SelectedFile)
+        If !(SelectedFile) {
+            this.Enable() ; re-enable gui input
             return
-        
+        }
+        this.Enable() ; re-enable gui input
+
         FileCopy, % this.clip, % SelectedFile "." OutExtension
     }
 
