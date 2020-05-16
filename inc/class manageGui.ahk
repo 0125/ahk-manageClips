@@ -80,7 +80,7 @@ class class_manageGui extends gui {
         }
         this.Enable() ; re-enable gui input
 
-        FileCopy, % this.clip, % SelectedFile "." OutExtension
+        FileCopy, % file.clip, % SelectedFile "." OutExtension
     }
 
     SetForward() {
