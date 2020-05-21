@@ -1,8 +1,10 @@
 ; misc
     #SingleInstance, force
     #NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
-    Menu, Tray, Icon, % A_ScriptDir "\res\app.png"
     OnExit("ExitFunc")
+    FileCreateDir, %A_ScriptDir%\res
+    FileInstall, D:\Programming and projects\ahk-clips-manager\res\MediaInfo.dll, %A_ScriptDir%\res\MediaInfo.dll
+    FileInstall, D:\Programming and projects\ahk-clips-manager\res\cleanSourceDirectory.ahk, %A_ScriptDir%\res\cleanSourceDirectory.ahk
     DllCall( "LoadLibrary", Str, A_ScriptDir "\res\MediaInfo.dll" ) ; mediainfo.dll needs to be the same version as autohotkey, 64 or 32 bit
 
 ; global vars

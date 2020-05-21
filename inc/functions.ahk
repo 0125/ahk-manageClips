@@ -10,7 +10,7 @@ ExitFunc(ExitReason, ExitCode) {
     FileDelete, % A_ScriptDir "\settings.json"
     FileAppend, % json.dump(settings,,2), % A_ScriptDir "\settings.json"
 
-    run, % A_ScriptDir "\cleanSourceDirectory.ahk" A_Space """" settings.clipSourcePath """" ; recycle .deleted files & empty folders in source path
+    run, % A_ScriptDir "\res\cleanSourceDirectory.ahk" A_Space """" settings.clipSourcePath """" ; recycle .deleted files & empty folders in source path
 }
 
 ; input = date time stamp eg. A_Now or A_YYYY A_MM A_DD 00 00 00
