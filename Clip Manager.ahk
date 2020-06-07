@@ -37,26 +37,29 @@
     }
 return
 
-dummyHandler:
-return
+; menu buttons
+    dummyHandler:
+    return
 
-btnExitScript:
-    exitapp
-return
+    btnExitScript:
+        exitapp
+    return
 
-btnReloadScript:
-    reload
-return
+    btnReloadScript:
+        reload
+    return
 
-~^s::reload
+; global hotkeys
+    ~^s::reload
 
-#Include, <json>
-#Include, <class gui>
-#Include, %A_ScriptDir%\inc
-#Include, class FileHandler.ahk
-#Include, class manageGui.ahk
-#Include, class pathGui.ahk
-#Include, class stats.ahk
-#Include, class trackTime.ahk
-#Include, class vlc.ahk
-#Include, functions.ahk
+; includes
+    #Include, <json>
+    #Include, <class gui>
+    #Include, %A_ScriptDir%\inc
+    #Include, class FileHandler.ahk
+    #Include, class manageGui.ahk
+    #Include, class pathGui.ahk
+    #Include, class stats.ahk
+    #Include, class trackTime.ahk
+    #Include, class vlc.ahk
+    #Include, functions.ahk
