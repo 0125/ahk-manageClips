@@ -30,7 +30,7 @@ class class_manageGui extends gui {
         SB_SetText("Total:`t`t" settings.stats.TotalClips, 4) ; total
 
         ; hotkeys
-		hotkey, IfWinActive, % "ahk_id " this.hwnd
+		hotkey, IfWinActive, % this.ahkid
         hotkey, enter, manageGui_HotkeyEnter
         hotkey, IfWinActive
 
