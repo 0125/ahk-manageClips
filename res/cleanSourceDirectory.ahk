@@ -23,3 +23,10 @@ Loop, Files, % inputDir "\*.*", DR ; loop all folders and recurse into subdirect
     If !(fileCount)
         FileRecycle, % currentDir
 }
+exitapp
+
+FolderExist(input) {
+    if InStr(FileExist(input), "D")
+        return true
+    return false
+}

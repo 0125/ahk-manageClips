@@ -1,3 +1,9 @@
+FolderExist(input) {
+    if InStr(FileExist(input), "D")
+        return true
+    return false
+}
+
 FileOpened(input) {
     FileMove, % input, % input, 0
         return ErrorLevel

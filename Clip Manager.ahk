@@ -14,15 +14,15 @@
 
 ; global vars
     global settings := {}
-    FileRead, Input, % A_ScriptDir "\settings.json"
-    If (Input) and !(Input = "{}") and !(Input = """" """") ; double quotes
-        settings := json.load(Input)
+    settings := json.load(FileRead(A_ScriptDir "\settings.json"))
+        If !(IsObject(settings))
+            settings := {}
     global manageGui := new class_manageGui("Clip Manager")
     global vlc := new class_vlc
     global file := new class_FileHandler
     global stats := new class_stats
 
-; autoexec
+; autoexec    
     pathGui := new class_pathGui("Please choose clip folders")
     pathGui.Setup() ; prompt user for source and destination folders
     manageGui.Setup()
@@ -50,11 +50,14 @@ return
     return
 
 ; global hotkeys
+    #If !(A_IsCompiled)
     ~^s::reload
+    #If
 
 ; includes
     #Include, <json>
     #Include, <class gui>
+    #Include, <CommandFunctions>
     #Include, %A_ScriptDir%\inc
     #Include, class FileHandler.ahk
     #Include, class manageGui.ahk
